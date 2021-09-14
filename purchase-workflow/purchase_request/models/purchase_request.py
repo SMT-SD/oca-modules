@@ -146,6 +146,25 @@ class PurchaseRequest(models.Model):
     purchase_count = fields.Integer(
         string="Purchases count", compute="_compute_purchase_count", readonly=True
     )
+    tender_id= fields.Many2one("purchase.requisition")
+
+    def create_agreement(self):
+        agreement_obj = self.env["purchase.requisition"]
+        lines=[]
+
+        for rec in self.line_ids:
+            lines.append((0,0,{
+                    "product_id":rec.product_id.id,
+                   "product_qty": rec.product_qty ,
+                    "product_uom_id":rec.product_uom_id.id
+                }))
+
+        self.tender_id=agreement_obj.create(
+            {
+                "user_id": self.requested_by.id,
+                "line_ids": lines
+            }
+        )
 
     @api.depends("line_ids")
     def _compute_purchase_count(self):
