@@ -2,7 +2,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl-3.0)
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 _STATES = [
     ("draft", "Draft"),
@@ -158,7 +158,9 @@ class PurchaseRequest(models.Model):
                    "product_qty": rec.product_qty ,
                     "product_uom_id":rec.product_uom_id.id
                 }))
-        if not self.tender_id:
+        if self.tender_id:
+            raise ValidationError('Purchase agreement is already created.')
+        else:
             self.tender_id=agreement_obj.create(
                 {
                     "user_id": self.requested_by.id,
