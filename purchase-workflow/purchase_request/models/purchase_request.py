@@ -164,7 +164,7 @@ class PurchaseRequest(models.Model):
                 "user_id": self.requested_by.id,
                 "line_ids": lines
             }
-        )
+        ).id
 
     @api.depends("line_ids")
     def _compute_purchase_count(self):
