@@ -158,13 +158,13 @@ class PurchaseRequest(models.Model):
                    "product_qty": rec.product_qty ,
                     "product_uom_id":rec.product_uom_id.id
                 }))
-
-        self.tender_id=agreement_obj.create(
-            {
-                "user_id": self.requested_by.id,
-                "line_ids": lines
-            }
-        ).id
+        if not self.tender_id:
+            self.tender_id=agreement_obj.create(
+                {
+                    "user_id": self.requested_by.id,
+                    "line_ids": lines
+                }
+            ).id
 
     @api.depends("line_ids")
     def _compute_purchase_count(self):
